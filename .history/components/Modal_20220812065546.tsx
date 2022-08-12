@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Dimensions, Text } from 'react-native';
+import React, {useCallback, useState, useEffect} from 'react';
+import {View, StyleSheet, Dimensions, Text} from 'react-native';
 import Modal from 'react-native-modal';
 import Button from './Button';
 import Coin from './Coin';
 
-const { height: WINDOW_HEIGHT } = Dimensions.get('window');
+const {height: WINDOW_HEIGHT} = Dimensions.get('window');
 
 interface ModalProps {
   visible: boolean;
@@ -15,9 +15,10 @@ function getUniqueID() {
   return Math.floor(Math.random() * Date.now()).toString();
 }
 
-const ModalComponent = ({ visible, onComplete }: ModalProps) => {
-  const [coins, setCoins] = useState<{ id: string }[]>([]);
+const ModalComponent = ({visible, onComplete}: ModalProps) => {
+  const [coins, setCoins] = useState<{id: string}[]>([]);
   const [counter, setCounter] = useState<number>(0);
+  const [indexes, setIndexes] = useState([]);
 
   const setCounterText = async (): Promise<void> => {
     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(index => {
@@ -28,25 +29,31 @@ const ModalComponent = ({ visible, onComplete }: ModalProps) => {
   const handleButtonPress = async () => {
     setCounterText();
     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((index: number) => {
-      setCoins(coins => [...coins, { id: getUniqueID(), index }]);
+      setCoins(coins => [...coins, {id: getUniqueID(), index}]);
     });
-    setTimeout(() => {
+  };
+
+  const handleComplete = (index: number) => {
+    setIndexes(indexes => [...indexes, index]);
+  };
+
+  useEffect(() => {
+    if (indexes.length === 10) {
+      setIndexes(0);
       setCoins([]);
       setCounter(0);
       onComplete();
-    }, 1000)
-  };
-
-
+    }
+  }, [indexes]);
 
   return (
     <Modal isVisible={visible} style={styles.modal}>
       <View style={styles.container}>
-        {coins.map(({ index }: { index: number }) => {
-          return <Coin key={`${index}-${Math.random()}`} index={index}  />;
+        {coins.map(({index}: {index: number}) => {
+          return <Coin key={index} index={index} onComplete={handleComplete} />;
         })}
         <View
-          style={StyleSheet.flatten([styles.count, { top: WINDOW_HEIGHT / 2 }])}>
+          style={StyleSheet.flatten([styles.count, {top: WINDOW_HEIGHT / 2}])}>
           <View style={styles.coin} />
           <Text>{`+${counter}`}</Text>
         </View>

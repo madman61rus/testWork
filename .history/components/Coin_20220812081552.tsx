@@ -1,9 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { StyleSheet, Dimensions } from 'react-native';
 import Animated, {
   useSharedValue,
+  useAnimatedScrollHandler,
   useAnimatedStyle,
   interpolate,
+  Extrapolation,
   withTiming
 } from 'react-native-reanimated';
 
@@ -15,8 +17,7 @@ interface CoinProps {
   onComplete: (id: number) => void;
 }
 
-const Coin = ({ index }: CoinProps) => {
-
+const Coin = ({ index, onComplete }: CoinProps) => {
   const animatedValueY = useSharedValue(WINDOW_HEIGHT / 2);
 
   const animatedStyles = useAnimatedStyle(() => {
@@ -44,7 +45,12 @@ const Coin = ({ index }: CoinProps) => {
       })
   }, []);
 
-
+  useEffect(() => {
+    console.log('animatedValueY.value', animatedValueY.value)
+    // if (animatedValueY.value > 400) {
+    //   onComplete(index);
+    // }
+  }, [animatedValueY.value])
 
   return (
     <Animated.View

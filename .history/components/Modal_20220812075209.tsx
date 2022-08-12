@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { View, StyleSheet, Dimensions, Text } from 'react-native';
 import Modal from 'react-native-modal';
 import Button from './Button';
@@ -18,6 +18,7 @@ function getUniqueID() {
 const ModalComponent = ({ visible, onComplete }: ModalProps) => {
   const [coins, setCoins] = useState<{ id: string }[]>([]);
   const [counter, setCounter] = useState<number>(0);
+  const [indexes, setIndexes] = useState([]);
 
   const setCounterText = async (): Promise<void> => {
     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(index => {
@@ -30,20 +31,26 @@ const ModalComponent = ({ visible, onComplete }: ModalProps) => {
     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((index: number) => {
       setCoins(coins => [...coins, { id: getUniqueID(), index }]);
     });
-    setTimeout(() => {
+  };
+
+  const handleComplete = (index: number) => {
+    setIndexes(indexes => [...indexes, index]);
+  };
+
+  useEffect(() => {
+    if (indexes.length === 10) {
+      setIndexes(0);
       setCoins([]);
       setCounter(0);
       onComplete();
-    }, 1000)
-  };
-
-
+    }
+  }, [indexes]);
 
   return (
     <Modal isVisible={visible} style={styles.modal}>
       <View style={styles.container}>
         {coins.map(({ index }: { index: number }) => {
-          return <Coin key={`${index}-${Math.random()}`} index={index}  />;
+          return <Coin key={index + new Date().getSeconds()} index={index} onComplete={handleComplete} />;
         })}
         <View
           style={StyleSheet.flatten([styles.count, { top: WINDOW_HEIGHT / 2 }])}>

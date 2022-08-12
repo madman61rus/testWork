@@ -34,7 +34,7 @@ const ModalComponent = ({ visible, onComplete }: ModalProps) => {
       setCoins([]);
       setCounter(0);
       onComplete();
-    }, 1000)
+    }, 2000)
   };
 
 

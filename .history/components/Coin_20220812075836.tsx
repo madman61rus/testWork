@@ -1,9 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { StyleSheet, Dimensions } from 'react-native';
 import Animated, {
   useSharedValue,
+  useAnimatedScrollHandler,
   useAnimatedStyle,
   interpolate,
+  Extrapolation,
   withTiming
 } from 'react-native-reanimated';
 
@@ -15,14 +17,13 @@ interface CoinProps {
   onComplete: (id: number) => void;
 }
 
-const Coin = ({ index }: CoinProps) => {
-
+const Coin = ({ index, onComplete }: CoinProps) => {
   const animatedValueY = useSharedValue(WINDOW_HEIGHT / 2);
 
   const animatedStyles = useAnimatedStyle(() => {
-    const translateY = interpolate(animatedValueY.value, [0, WINDOW_HEIGHT / 2 + index * 20], [0, WINDOW_HEIGHT / 2 + index * 20], {});
-    const translateX = interpolate(animatedValueY.value, [0, 100, 150, 200, WINDOW_HEIGHT / 2 + index * 20], [200, 160, 140, 130, 120], {});
-    const opacity = interpolate(animatedValueY.value, [0, WINDOW_HEIGHT / 2 + index * 20], [0, 1], {});
+    const translateY = interpolate(animatedValueY.value, [0, WINDOW_HEIGHT / 2 + index * 20], [0, WINDOW_HEIGHT / 2 + index * 20], {  });
+    const translateX = interpolate(animatedValueY.value, [0, 100, 150, 200, WINDOW_HEIGHT / 2 + index * 20], [200, 160, 140, 130, 120], {  });
+    const opacity = interpolate(animatedValueY.value, [0, WINDOW_HEIGHT / 2 + index * 20], [0, 1], {  });
 
     return {
       transform: [
@@ -38,13 +39,17 @@ const Coin = ({ index }: CoinProps) => {
   });
 
   useEffect(() => {
-    animatedValueY.value =
-      withTiming(5, {
-        duration: 500 + index * 70,
-      })
-  }, []);
+    animatedValueY.value = 
+    withTiming( 5, {
+      duration: 500 + index * 70,
+    })
+  }, [ index]);
 
-
+  useEffect(() => {
+if (animatedValueY.value === 5) {
+  onComplete();
+}
+  }, [animatedValueY])
 
   return (
     <Animated.View

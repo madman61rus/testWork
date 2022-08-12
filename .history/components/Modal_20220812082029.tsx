@@ -34,7 +34,7 @@ const ModalComponent = ({ visible, onComplete }: ModalProps) => {
       setCoins([]);
       setCounter(0);
       onComplete();
-    }, 1000)
+    }, 2000)
   };
 
 
@@ -43,7 +43,7 @@ const ModalComponent = ({ visible, onComplete }: ModalProps) => {
     <Modal isVisible={visible} style={styles.modal}>
       <View style={styles.container}>
         {coins.map(({ index }: { index: number }) => {
-          return <Coin key={`${index}-${Math.random()}`} index={index}  />;
+          return <Coin key={`${index}-${Math.random()}`} index={index} onComplete={handleComplete} />;
         })}
         <View
           style={StyleSheet.flatten([styles.count, { top: WINDOW_HEIGHT / 2 }])}>
